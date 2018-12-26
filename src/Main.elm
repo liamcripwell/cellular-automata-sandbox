@@ -49,9 +49,11 @@ view model =
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
-  input [ type_ t, placeholder p, value v, onInput toMsg ] []
+  div [] 
+    [ text ("Number of " ++ p ++ ": ")
+    , input [ type_ t, placeholder p, value v, onInput toMsg ] [] ]
 
 
 viewValidation : Model -> Html msg
 viewValidation model =
-  div [ style "color" "green" ] [ text "OK" ]
+  div [] [ text ( "Grid Size: " ++ model.rows ++ "x" ++ model.cols) ]
