@@ -1,6 +1,7 @@
 import Browser
-import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 
 
 main =
@@ -9,25 +10,30 @@ main =
 
 -- MODEL
 
-type alias Model = Int
+type alias Model = 
+  { rows : String
+  , cols : String
+  }
 
 init : Model
 init =
-  0
+  Model "5" "5"
 
 
 -- UPDATE
 
-type Msg = Increment | Decrement
+type Msg 
+  = Rows String
+  | Cols String
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Increment ->
-      model + 1
+    Rows rows ->
+      { model | rows = rows }
 
-    Decrement ->
-      model - 1
+    Cols cols ->
+      { model | cols = cols }
 
 
 -- VIEW
@@ -35,7 +41,17 @@ update msg model =
 view : Model -> Html Msg
 view model =
   div []
-    [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (String.fromInt model) ]
-    , button [ onClick Increment ] [ text "+" ]
+    [ viewInput "text" "Rows" model.rows Rows
+    , viewInput "text" "Cols" model.cols Cols
+    , viewValidation model
     ]
+
+
+viewInput : String -> String -> String -> (String -> msg) -> Html msg
+viewInput t p v toMsg =
+  input [ type_ t, placeholder p, value v, onInput toMsg ] []
+
+
+viewValidation : Model -> Html msg
+viewValidation model =
+  div [ style "color" "green" ] [ text "OK" ]
