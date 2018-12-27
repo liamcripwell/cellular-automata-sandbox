@@ -3,7 +3,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 
-import List exposing (map, range, sum)
+import List exposing (map, range, sum, foldr)
 
 
 main =
@@ -70,4 +70,6 @@ viewValidation model =
 viewGrid : Model -> Html msg
 viewGrid model =
   div []
-    ( range 1 (safeToInt model.cols) |> map (\x -> input [ type_ "text" ] []) )
+    ( range 1 (safeToInt model.rows) |> map (\x ->
+        range 1 (safeToInt model.cols) |> map (\y -> input [ type_ "text" ] [])
+      ) |> foldr (++) [] )
