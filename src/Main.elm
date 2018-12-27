@@ -3,6 +3,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 
+import List exposing (map, range, sum)
+
 
 main =
   Browser.sandbox { init = init, update = update, view = view }
@@ -43,9 +45,13 @@ view model =
   div []
     [ viewInput "text" "Rows" model.rows Rows
     , viewInput "text" "Cols" model.cols Cols
+    , br [] []
     , viewValidation model
+    , br [] []
+    , viewGrid model
     ]
 
+safeToInt = String.toInt >>  Maybe.withDefault 0
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
@@ -56,4 +62,12 @@ viewInput t p v toMsg =
 
 viewValidation : Model -> Html msg
 viewValidation model =
-  div [] [ text ( "Grid Size: " ++ model.rows ++ "x" ++ model.cols) ]
+  div [] 
+    [ text ( "Grid Size: " ++ model.rows ++ "x" ++ model.cols) ]
+
+
+
+viewGrid : Model -> Html msg
+viewGrid model =
+  div []
+    ( range 1 (safeToInt model.cols) |> map (\x -> input [ type_ "text" ] []) )
