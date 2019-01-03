@@ -78,5 +78,3 @@ viewGrid model =
             input [ type_ "text" ] []) |> append [ br [] [] ]
       ) |> foldr (++) [] )
 
-
-
