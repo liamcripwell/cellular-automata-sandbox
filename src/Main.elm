@@ -5,6 +5,9 @@ import Html.Events exposing (onClick, onInput)
 
 import List exposing (map, range, sum, foldr, append)
 
+import Svg
+import Svg.Attributes as SvgA
+
 
 main =
   Browser.sandbox { init = init, update = update, view = view }
@@ -74,3 +77,6 @@ viewGrid model =
         range 1 (safeToInt model.cols) |> map (\y -> 
             input [ type_ "text" ] []) |> append [ br [] [] ]
       ) |> foldr (++) [] )
+
+
+
