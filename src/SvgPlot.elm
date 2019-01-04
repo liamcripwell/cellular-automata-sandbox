@@ -3,7 +3,7 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 gridWidth = 50
-gridHeight = 30
+gridHeight = 35
 cellSize = 25 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
 plotSquares : List (Int, Int) -> Html.Html msg
@@ -45,10 +45,10 @@ drawGrid =
     svg [ width <| String.fromInt <| (gridWidth*(cellSize+1)) + 2
         , height <| String.fromInt <| (gridHeight*(cellSize+1)) + 2
         ] 
-        ([ (List.map gridLineVert <| List.range 0 gridWidth)
-            ++ (List.map gridLineHori <| List.range 0 gridHeight)
-        , [updateCells [(0, 0), (0, 1), (1, 0)]]
-        ] |> List.foldr (++) [])
+        ([ List.map gridLineVert <| List.range 0 gridWidth
+         , List.map gridLineHori <| List.range 0 gridHeight
+         , [ updateCells [(0, 0), (0, 1), (1, 0)] ]
+         ] |> List.foldr (++) [])
 
 
 updateCells : List (Float, Float) -> Html.Html msg
