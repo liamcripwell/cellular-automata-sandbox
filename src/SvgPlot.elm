@@ -2,9 +2,9 @@ import Html
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
-gridWidth = 7
-gridHeight = 5
-cellSize = 19 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
+gridWidth = 50
+gridHeight = 30
+cellSize = 25 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
 plotSquares : List (Int, Int) -> Html.Html msg
 plotSquares =
@@ -23,39 +23,41 @@ plotSquares =
 drawGrid : Html.Html msg
 drawGrid = 
   let
-      gridLineVert : Int -> Html.Html msg
+      gridLineVert : Int -> Svg msg
       gridLineVert i =
         line
           [ x1 (String.fromInt (i * cellSize + 1))
           , y1 "1"
           , x2 (String.fromInt (i * cellSize + 1))
           , y2 <| String.fromInt <| (gridHeight*cellSize) + 1
-          , stroke "blue"
+          , stroke "lightgrey"
           , strokeWidth "1" ] []
-      gridLineHori : Int -> Html.Html msg
+      gridLineHori : Int -> Svg msg
       gridLineHori i =
         line
           [ x1 "1"
           , y1 (String.fromInt (i * cellSize + 1))
           , x2 <| String.fromInt <| (gridWidth*cellSize) + 1
           , y2 (String.fromInt (i * cellSize + 1))
-          , stroke "blue"
+          , stroke "lightgrey"
           , strokeWidth "1" ] []
   in
     svg [ width <| String.fromInt <| (gridWidth*(cellSize+1)) + 2
         , height <| String.fromInt <| (gridHeight*(cellSize+1)) + 2
         ] 
-        <| (List.map gridLineVert <| List.range 0 gridWidth)
+        ([ (List.map gridLineVert <| List.range 0 gridWidth)
             ++ (List.map gridLineHori <| List.range 0 gridHeight)
+        , [updateCells [(0, 0), (0, 1), (1, 0)]]
+        ] |> List.foldr (++) [])
 
 
-updateCells : List (Int, Int) -> Html.Html msg
+updateCells : List (Float, Float) -> Html.Html msg
 updateCells = 
   let
     toSquare (a, b) =
       rect
-        [ x (String.fromInt (a * cellSize + 1))
-        , y (String.fromInt (b * cellSize + 1))
+        [ x (String.fromFloat (a * cellSize + 1.5))
+        , y (String.fromFloat (b * cellSize + 1.5))
         , width <| String.fromInt (cellSize - 1)
         , height <| String.fromInt (cellSize - 1) ] []
   in
