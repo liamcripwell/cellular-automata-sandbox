@@ -54,10 +54,10 @@ updateCells =
   let
     toSquare (a, b) =
       rect
-        [ x (String.fromInt (a * cellSize))
-        , y (String.fromInt (b * cellSize))
-        , width <| String.fromInt cellSize
-        , height <| String.fromInt cellSize ] []
+        [ x (String.fromInt (a * cellSize + 1))
+        , y (String.fromInt (b * cellSize + 1))
+        , width <| String.fromInt (cellSize - 1)
+        , height <| String.fromInt (cellSize - 1) ] []
   in
     svg [ width <| String.fromInt <| (gridWidth*(cellSize+1)) + 2
         , height <| String.fromInt <| (gridHeight*(cellSize+1)) + 2
@@ -67,5 +67,5 @@ updateCells =
 main = 
   Html.div [] 
     [ drawGrid
-    , updateCells [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
+    , updateCells [(0, 0), (0, 1), (1, 0)]
     ]
