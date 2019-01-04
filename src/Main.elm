@@ -54,7 +54,7 @@ view model =
     , viewGrid model
     ]
 
-safeToInt = String.toInt >>  Maybe.withDefault 0
+safeToInt = String.toInt >> Maybe.withDefault 0
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
