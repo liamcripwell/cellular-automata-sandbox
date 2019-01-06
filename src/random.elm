@@ -2,6 +2,7 @@ import Browser
 import Html exposing (..)
 import Html.Events exposing (..)
 import Random
+import Tuple
 
 
 
@@ -22,13 +23,13 @@ main =
 
 
 type alias Model =
-  { dieFace : Int
+  { dieFace : (Int, Int)
   }
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model 1
+  ( Model (1, 1)
   , Cmd.none
   )
 
@@ -39,7 +40,7 @@ init _ =
 
 type Msg
   = Roll
-  | NewFace Int
+  | NewFace (Int, Int)
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -47,11 +48,11 @@ update msg model =
   case msg of
     Roll ->
       ( model
-      , Random.generate NewFace (Random.int 1 6)
+      , Random.generate NewFace (Random.pair (Random.int 1 6) (Random.int 1 6))
       )
 
-    NewFace newFace ->
-      ( Model newFace
+    NewFace (newFace1, newFace2) ->
+      ( Model (newFace1, newFace2)
       , Cmd.none
       )
 
@@ -72,6 +73,7 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   div []
-    [ h1 [] [ text (String.fromInt model.dieFace) ]
+    [ h1 [] [ text (String.fromInt <| Tuple.first model.dieFace)
+            , text (String.fromInt <| Tuple.second model.dieFace) ]
     , button [ onClick Roll ] [ text "Roll" ]
     ]
