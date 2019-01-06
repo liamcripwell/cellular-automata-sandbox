@@ -30,7 +30,7 @@ type alias Model =
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model (1, 1)
+  ( Model (0, 0)
   , Cmd.none
   )
 
@@ -49,7 +49,7 @@ update msg model =
   case msg of
     Roll ->
       ( model
-      , Random.generate NewFace (Random.pair (Random.int 1 6) (Random.int 1 6))
+      , Random.generate NewFace (Random.pair (Random.int 0 (gridWidth-1)) (Random.int 0 (gridHeight-1)))
       )
 
     NewFace (newFace1, newFace2) ->
@@ -75,15 +75,15 @@ view : Model -> Html Msg
 view model =
   div []
     [ drawGrid <| 
-        [ (toFloat <| Tuple.first model.dieFace, toFloat <| Tuple.second model.dieFace)
-        , (toFloat <| Tuple.second model.dieFace, toFloat <| Tuple.first model.dieFace)
-        ]
+        [ (toFloat <| Tuple.first model.dieFace, toFloat <| Tuple.second model.dieFace) ]
     , h1 [] [ text (String.fromInt <| Tuple.first model.dieFace)
+            , text ", "
             , text (String.fromInt <| Tuple.second model.dieFace) ]
     , button [ onClick Roll ] [ text "Roll" ]
     ]
 
 
+-- TODO: get rid of these global vars 
 gridWidth = 50
 gridHeight = 25
 cellSize = 25 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
