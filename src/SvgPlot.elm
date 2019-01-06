@@ -6,19 +6,21 @@ gridWidth = 50
 gridHeight = 35
 cellSize = 25 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
-plotSquares : List (Int, Int) -> Html.Html msg
-plotSquares =
+
+updateCells : List (Float, Float) -> Html.Html msg
+updateCells = 
   let
     toSquare (a, b) =
       rect
-        [ x (String.fromInt (a * cellSize))
-        , y (String.fromInt (b * cellSize))
-        , width <| String.fromInt cellSize
-        , height <| String.fromInt cellSize ] []
+        [ x (String.fromFloat (a * cellSize + 1.5))
+        , y (String.fromFloat (b * cellSize + 1.5))
+        , width <| String.fromInt (cellSize - 1)
+        , height <| String.fromInt (cellSize - 1) 
+        , fill "purple" ] []
   in
-    svg [ width <| String.fromInt (gridWidth*cellSize)
-        , height <| String.fromInt (gridHeight*cellSize) ] << List.map toSquare
-
+    svg [ width <| String.fromInt <| (gridWidth*(cellSize+1)) + 2
+        , height <| String.fromInt <| (gridHeight*(cellSize+1)) + 2
+        ]  << List.map toSquare
 
 drawGrid : List (Float, Float) -> Html.Html msg
 drawGrid cells = 
@@ -49,22 +51,6 @@ drawGrid cells =
          , List.map gridLineHori <| List.range 0 gridHeight
          , [ updateCells cells ]
          ] |> List.foldr (++) [])
-
-
-updateCells : List (Float, Float) -> Html.Html msg
-updateCells = 
-  let
-    toSquare (a, b) =
-      rect
-        [ x (String.fromFloat (a * cellSize + 1.5))
-        , y (String.fromFloat (b * cellSize + 1.5))
-        , width <| String.fromInt (cellSize - 1)
-        , height <| String.fromInt (cellSize - 1) 
-        , fill "purple" ] []
-  in
-    svg [ width <| String.fromInt <| (gridWidth*(cellSize+1)) + 2
-        , height <| String.fromInt <| (gridHeight*(cellSize+1)) + 2
-        ]  << List.map toSquare
 
 
 main = 
