@@ -20,8 +20,8 @@ plotSquares =
         , height <| String.fromInt (gridHeight*cellSize) ] << List.map toSquare
 
 
-drawGrid : Html.Html msg
-drawGrid = 
+drawGrid : List (Float, Float) -> Html.Html msg
+drawGrid cells = 
   let
       gridLineVert : Int -> Svg msg
       gridLineVert i =
@@ -47,7 +47,7 @@ drawGrid =
         ] 
         ([ List.map gridLineVert <| List.range 0 gridWidth
          , List.map gridLineHori <| List.range 0 gridHeight
-         , [ updateCells [(0, 0), (0, 1), (1, 0)] ]
+         , [ updateCells cells ]
          ] |> List.foldr (++) [])
 
 
@@ -59,7 +59,8 @@ updateCells =
         [ x (String.fromFloat (a * cellSize + 1.5))
         , y (String.fromFloat (b * cellSize + 1.5))
         , width <| String.fromInt (cellSize - 1)
-        , height <| String.fromInt (cellSize - 1) ] []
+        , height <| String.fromInt (cellSize - 1) 
+        , fill "purple" ] []
   in
     svg [ width <| String.fromInt <| (gridWidth*(cellSize+1)) + 2
         , height <| String.fromInt <| (gridHeight*(cellSize+1)) + 2
@@ -67,7 +68,4 @@ updateCells =
 
 
 main = 
-  Html.div [] 
-    [ drawGrid
-    , updateCells [(0, 0), (0, 1), (1, 0)]
-    ]
+  drawGrid [(0, 0), (0, 1), (1, 0), (20, 7)]
