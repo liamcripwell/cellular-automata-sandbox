@@ -74,16 +74,18 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   div []
-    [ h1 [] [ text (String.fromInt <| Tuple.first model.dieFace)
+    [ drawGrid <| 
+        [ (toFloat <| Tuple.first model.dieFace, toFloat <| Tuple.second model.dieFace)
+        , (toFloat <| Tuple.second model.dieFace, toFloat <| Tuple.first model.dieFace)
+        ]
+    , h1 [] [ text (String.fromInt <| Tuple.first model.dieFace)
             , text (String.fromInt <| Tuple.second model.dieFace) ]
     , button [ onClick Roll ] [ text "Roll" ]
-    , br [] []
-    , drawGrid <| [(1, 1), (0, 2)]
     ]
 
 
 gridWidth = 50
-gridHeight = 35
+gridHeight = 25
 cellSize = 25 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
 
