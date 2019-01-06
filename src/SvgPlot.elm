@@ -1,6 +1,10 @@
+import Browser
 import Html
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Random
+
+
 
 gridWidth = 50
 gridHeight = 35
@@ -53,5 +57,6 @@ drawGrid cells =
          ] |> List.foldr (++) [])
 
 
-main = 
-  drawGrid [(0, 0), (0, 1), (1, 0), (20, 7)]
+-- main = 
+--   -- drawGrid <| List.map (\x -> (Random.generate <| Random.int 1 6, Random.generate <| Random.int 1 6)) <| List.range 0 5
+--   drawGrid <| Random.generate Random.initialSeed (Random.int 1 6)
