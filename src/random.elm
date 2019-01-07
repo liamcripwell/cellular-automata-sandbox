@@ -32,8 +32,7 @@ type alias Model =
 init : () -> (Model, Cmd Msg)
 init _ =
   ( Model []
---   , Random.generate NewState <| randomCells 5
-  , Random.generate NewState <| randomCells 200
+  , Random.generate NewState <| randomCells 500
   )
 
 
@@ -52,22 +51,27 @@ cartesian xs ys =
     ( \x -> List.map ( \y -> (x, y) ) ys )
     xs
 
-liveNeighbours (x, y) = 
+liveNeighbours state (x, y) = 
   cartesian (List.range (x-1) (x+1)) (List.range (y-1) (y+1))
+  |> List.filter (\a -> List.member a state)
 
-rule1 state cell =
+rule1 neighbours cell =
   let
-    neighbors = 
-      liveNeighbours cell
-      |> List.filter (\a -> List.member a state)
-
-    neighborsCount = List.length <| neighbors
+    neighborsCount = (List.length neighbours) - 1
   in
     if neighborsCount < 2 then [] else [cell]
     
 
 rule4 cell =
   liveNeighbours cell
+
+gameOfLife liveCells cell =
+  let
+    neighbours :  List (Int, Int)
+    neighbours = liveNeighbours liveCells cell
+  in
+    rule1 neighbours cell
+
 
 
 type Msg
@@ -81,11 +85,11 @@ update msg model =
   case msg of
     TimeStep ->
       ( model
-      , Random.generate NewState <| randomCells 40
+      , Random.generate NewState <| randomCells 400
       )
 
     Test ->
-      ( Model <| List.foldr (++) [] <| List.map (rule1 model.liveCells) model.liveCells
+      ( Model <| List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells
       , Cmd.none
       )
 
