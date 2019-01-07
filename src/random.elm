@@ -24,24 +24,27 @@ main =
 
 
 type alias Model =
-  { dieFace : (Int, Int)
+  { dieFace : List (Int, Int)
   }
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model (0, 0)
-  , Random.generate NewFace (Random.pair (Random.int 0 (gridWidth-1)) (Random.int 0 (gridHeight-1)))
+  ( Model [ (0, 0) ]
+  , Random.generate NewFace <| randomCells
   )
 
 
 
 -- UPDATE
 
+randomCells : Random.Generator (List (Int, Int))
+randomCells = Random.list 5 (Random.pair (Random.int 0 (gridWidth-1)) (Random.int 0 (gridHeight-1)))
+
 
 type Msg
   = Roll
-  | NewFace (Int, Int)
+  | NewFace (List (Int, Int))
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -49,11 +52,11 @@ update msg model =
   case msg of
     Roll ->
       ( model
-      , Random.generate NewFace (Random.pair (Random.int 0 (gridWidth-1)) (Random.int 0 (gridHeight-1)))
+      , Random.generate NewFace <| randomCells
       )
 
-    NewFace (newFace1, newFace2) ->
-      ( Model (newFace1, newFace2)
+    NewFace positiveCells ->
+      ( Model positiveCells
       , Cmd.none
       )
 
@@ -75,10 +78,7 @@ view : Model -> Html Msg
 view model =
   div []
     [ drawGrid <| 
-        [ (toFloat <| Tuple.first model.dieFace, toFloat <| Tuple.second model.dieFace) ]
-    , h1 [] [ text (String.fromInt <| Tuple.first model.dieFace)
-            , text ", "
-            , text (String.fromInt <| Tuple.second model.dieFace) ]
+        List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.dieFace
     , button [ onClick Roll ] [ text "Roll" ]
     ]
 
@@ -103,6 +103,7 @@ updateCells =
     Svg.svg [ width <| String.fromInt <| (gridWidth*(cellSize+1)) + 2
         , height <| String.fromInt <| (gridHeight*(cellSize+1)) + 2
         ]  << List.map toSquare
+
 
 drawGrid : List (Float, Float) -> Html.Html msg
 drawGrid cells = 
