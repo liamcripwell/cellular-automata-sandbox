@@ -33,7 +33,7 @@ init : () -> (Model, Cmd Msg)
 init _ =
   ( Model []
 --   , Random.generate NewState <| randomCells 5
-  , Random.generate NewState <| randomCells 5
+  , Random.generate NewState <| randomCells 200
   )
 
 
@@ -52,12 +52,22 @@ cartesian xs ys =
     ( \x -> List.map ( \y -> (x, y) ) ys )
     xs
 
-rule4 cell =
+liveNeighbours (x, y) = 
+  cartesian (List.range (x-1) (x+1)) (List.range (y-1) (y+1))
+
+rule1 state cell =
   let
-      liveNeighbours (x, y) = 
-        cartesian (List.range (x-1) (x+1)) (List.range (y-1) (y+1))
+    neighbors = 
+      liveNeighbours cell
+      |> List.filter (\a -> List.member a state)
+
+    neighborsCount = List.length <| neighbors
   in
-    liveNeighbours cell
+    if neighborsCount < 2 then [] else [cell]
+    
+
+rule4 cell =
+  liveNeighbours cell
 
 
 type Msg
@@ -71,11 +81,11 @@ update msg model =
   case msg of
     TimeStep ->
       ( model
-      , Random.generate NewState <| randomCells 5
+      , Random.generate NewState <| randomCells 40
       )
 
     Test ->
-      ( Model <| List.foldr (++) [] <| List.map rule4 model.liveCells
+      ( Model <| List.foldr (++) [] <| List.map (rule1 model.liveCells) model.liveCells
       , Cmd.none
       )
 
