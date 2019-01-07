@@ -31,7 +31,7 @@ type alias Model =
 init : () -> (Model, Cmd Msg)
 init _ =
   ( Model (0, 0)
-  , Cmd.none
+  , Random.generate NewFace (Random.pair (Random.int 0 (gridWidth-1)) (Random.int 0 (gridHeight-1)))
   )
 
 
@@ -84,9 +84,9 @@ view model =
 
 
 -- TODO: get rid of these global vars 
-gridWidth = 50
-gridHeight = 25
-cellSize = 25 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
+gridWidth = 125
+gridHeight = 75
+cellSize = 10 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
 
 updateCells : List (Float, Float) -> Html.Html msg
