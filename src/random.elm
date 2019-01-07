@@ -24,14 +24,14 @@ main =
 
 
 type alias Model =
-  { dieFace : List (Int, Int)
+  { liveCells : List (Int, Int)
   }
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
   ( Model [ (0, 0) ]
-  , Random.generate NewFace <| randomCells 5
+  , Random.generate NewState <| randomCells 5
   )
 
 
@@ -46,20 +46,20 @@ randomCells n = Random.list n randomCell
 
 
 type Msg
-  = Roll
-  | NewFace (List (Int, Int))
+  = TimeStep
+  | NewState (List (Int, Int))
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Roll ->
+    TimeStep ->
       ( model
-      , Random.generate NewFace <| randomCells 5
+      , Random.generate NewState <| randomCells 5
       )
 
-    NewFace positiveCells ->
-      ( Model positiveCells
+    NewState liveCells ->
+      ( Model liveCells
       , Cmd.none
       )
 
@@ -81,8 +81,8 @@ view : Model -> Html Msg
 view model =
   div []
     [ drawGrid <| 
-        List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.dieFace
-    , button [ onClick Roll ] [ text "Roll" ]
+        List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.liveCells
+    , button [ onClick TimeStep ] [ text "Time Step" ]
     ]
 
 
