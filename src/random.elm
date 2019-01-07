@@ -31,15 +31,18 @@ type alias Model =
 init : () -> (Model, Cmd Msg)
 init _ =
   ( Model [ (0, 0) ]
-  , Random.generate NewFace <| randomCells
+  , Random.generate NewFace <| randomCells 5
   )
 
 
 
 -- UPDATE
 
-randomCells : Random.Generator (List (Int, Int))
-randomCells = Random.list 5 (Random.pair (Random.int 0 (gridWidth-1)) (Random.int 0 (gridHeight-1)))
+randomCell : Random.Generator (Int, Int)
+randomCell = (Random.pair (Random.int 0 (gridWidth-1)) (Random.int 0 (gridHeight-1)))
+
+randomCells : Int -> Random.Generator (List (Int, Int))
+randomCells n = Random.list n randomCell
 
 
 type Msg
@@ -52,7 +55,7 @@ update msg model =
   case msg of
     Roll ->
       ( model
-      , Random.generate NewFace <| randomCells
+      , Random.generate NewFace <| randomCells 5
       )
 
     NewFace positiveCells ->
