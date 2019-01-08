@@ -49,27 +49,18 @@ cellSize = 15 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
 
 type Msg
-  = Tick Time.Posix
-  | Test
+  = Step Time.Posix
   | NewState (List (Int, Int))
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Tick newTime ->
+    Step newTime ->
       ( { model | liveCells = 
           (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
           ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
          , timeStep = (model.timeStep + 1)}
-      , Cmd.none
-      )
-
-    Test ->
-      ( { model | liveCells = 
-          (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
-          ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
-        }
       , Cmd.none
       )
 
@@ -144,7 +135,7 @@ gameOfDeath liveCells cell =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every 500 Tick
+  Time.every 500 Step
 
 
 
@@ -154,9 +145,7 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   div []
-    [ drawGrid <| 
-        List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.liveCells
-    , button [ onClick Test ] [ text "Time Step" ]
+    [ drawGrid <| List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.liveCells
     , h1 [] [ text <| "Time Step: " ++ (String.fromInt model.timeStep) ]
     ]
 
