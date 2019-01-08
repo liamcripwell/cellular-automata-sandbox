@@ -34,7 +34,7 @@ type alias Model =
 init : () -> (Model, Cmd Msg)
 init _ =
   ( Model [] (Time.millisToPosix 0)
-  , Random.generate NewState <| randomCells 500
+  , Random.generate NewState <| randomCells 750
   )
 
 
@@ -59,7 +59,10 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Tick newTime ->
-      ( { model | time = newTime }
+      ( { model | liveCells = 
+          (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
+          ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
+        }
       , Cmd.none
       )
 
@@ -147,7 +150,7 @@ gameOfDeath liveCells cell =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every 1000 Tick
+  Time.every 100 Tick
 
 
 
