@@ -6,6 +6,7 @@ import Tuple
 import Svg 
 import Svg.Attributes exposing (..)
 import List.Extra exposing (..)
+import Time
 
 
 -- MAIN
@@ -26,12 +27,13 @@ main =
 
 type alias Model =
   { liveCells : List (Int, Int)
+  , time : Time.Posix
   }
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model []
+  ( Model [] (Time.millisToPosix 0)
   , Random.generate NewState <| randomCells 500
   )
 
@@ -47,7 +49,8 @@ cellSize = 15 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
 
 type Msg
-  = TimeStep
+  = Tick Time.Posix
+  | TimeStep
   | Test
   | NewState (List (Int, Int))
 
@@ -55,20 +58,26 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    Tick newTime ->
+      ( { model | time = newTime }
+      , Cmd.none
+      )
+
     TimeStep ->
       ( model
       , Random.generate NewState <| randomCells 200
       )
 
     Test ->
-      ( Model <| 
-        (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
+      ( { model | liveCells = 
+          (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
           ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
+        }
       , Cmd.none
       )
 
-    NewState liveCells ->
-      ( Model liveCells
+    NewState newLiveCells ->
+      ( { model | liveCells = newLiveCells }
       , Cmd.none
       )
 
@@ -138,7 +147,7 @@ gameOfDeath liveCells cell =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  Time.every 1000 Tick
 
 
 
@@ -151,6 +160,7 @@ view model =
     [ drawGrid <| 
         List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.liveCells
     , button [ onClick Test ] [ text "Time Step" ]
+    , h1 [] [ text (String.fromInt (Time.posixToMillis model.time)) ]
     ]
 
 
@@ -182,6 +192,7 @@ drawGrid cells =
           , y2 <| String.fromInt <| (gridHeight*cellSize) + 1
           , stroke "lightgrey"
           , strokeWidth "1" ] []
+
       gridLineHori : Int -> Svg.Svg msg
       gridLineHori i =
         Svg.line
