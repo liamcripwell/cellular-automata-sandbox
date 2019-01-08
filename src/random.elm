@@ -27,13 +27,13 @@ main =
 
 type alias Model =
   { liveCells : List (Int, Int)
-  , time : Time.Posix
+  , timeStep : Int
   }
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model [] (Time.millisToPosix 0)
+  ( Model [] 0
   , Random.generate NewState <| randomCells 750
   )
 
@@ -50,7 +50,6 @@ cellSize = 15 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
 type Msg
   = Tick Time.Posix
-  | TimeStep
   | Test
   | NewState (List (Int, Int))
 
@@ -62,13 +61,8 @@ update msg model =
       ( { model | liveCells = 
           (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
           ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
-        }
+         , timeStep = (model.timeStep + 1)}
       , Cmd.none
-      )
-
-    TimeStep ->
-      ( model
-      , Random.generate NewState <| randomCells 200
       )
 
     Test ->
@@ -150,7 +144,7 @@ gameOfDeath liveCells cell =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every 100 Tick
+  Time.every 500 Tick
 
 
 
@@ -163,7 +157,7 @@ view model =
     [ drawGrid <| 
         List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.liveCells
     , button [ onClick Test ] [ text "Time Step" ]
-    , h1 [] [ text (String.fromInt (Time.posixToMillis model.time)) ]
+    , h1 [] [ text <| "Time Step: " ++ (String.fromInt model.timeStep) ]
     ]
 
 
