@@ -32,7 +32,7 @@ type alias Model =
 init : () -> (Model, Cmd Msg)
 init _ =
   ( Model []
-  , Random.generate NewState <| randomCells 1000
+  , Random.generate NewState <| randomCells 500
   )
 
 
@@ -64,8 +64,8 @@ rule2 neighborCount cell =
 rule3 neighborCount cell =
   if neighborCount > 3 then Nothing else Just cell
 
-rule4 cell =
-  liveneighbors cell
+rule4 neighborCount cell =
+  if neighborCount == 3 then [cell] else []
 
 gameOfLife liveCells cell =
   let
@@ -84,6 +84,14 @@ gameOfLife liveCells cell =
                 Nothing -> []
                 Just z -> [z]
 
+gameOfDeath liveCells cell =
+    let
+        neighbors = liveneighbors liveCells cell
+        neighborCount = (List.length neighbors)
+        isLive = List.member cell liveCells
+    in
+      if isLive then []
+      else rule4 neighborCount cell
 
 
 type Msg
@@ -97,11 +105,13 @@ update msg model =
   case msg of
     TimeStep ->
       ( model
-      , Random.generate NewState <| randomCells 400
+      , Random.generate NewState <| randomCells 200
       )
 
     Test ->
-      ( Model <| List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells
+      ( Model <| 
+        (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
+          ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
       , Cmd.none
       )
 
@@ -134,9 +144,9 @@ view model =
 
 
 -- TODO: get rid of these global vars 
-gridWidth = 125
-gridHeight = 75
-cellSize = 10 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
+gridWidth = 50
+gridHeight = 25
+cellSize = 15 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
 
 updateCells : List (Float, Float) -> Html.Html msg
