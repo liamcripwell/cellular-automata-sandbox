@@ -32,7 +32,7 @@ type alias Model =
 init : () -> (Model, Cmd Msg)
 init _ =
   ( Model []
-  , Random.generate NewState <| randomCells 500
+  , Random.generate NewState <| randomCells 1000
   )
 
 
@@ -56,7 +56,13 @@ liveneighbors state (x, y) =
   |> List.filter (\a -> List.member a state)
 
 rule1 neighborCount cell =
-  if neighborCount < 2 then [] else [cell]
+  if neighborCount < 2 then Nothing else Just cell
+
+rule2 neighborCount cell =
+  if neighborCount == 2 || neighborCount == 3 then Just cell else Nothing
+
+rule3 neighborCount cell =
+  if neighborCount > 3 then Nothing else Just cell
 
 rule4 cell =
   liveneighbors cell
@@ -68,7 +74,15 @@ gameOfLife liveCells cell =
 
     neighborCount = (List.length neighbors) - 1
   in
-    rule1 neighborCount cell
+    case rule1 neighborCount cell of
+      Nothing -> []
+      Just x -> 
+        case rule2 neighborCount cell of
+          Nothing -> []
+          Just y ->
+            case rule3 neighborCount cell of
+                Nothing -> []
+                Just z -> [z]
 
 
 
