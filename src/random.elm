@@ -130,6 +130,16 @@ gameOfDeath liveCells cell =
       else rule4 neighborCount cell
 
 
+type alias Automaton = 
+  { liveCells : List (Int, Int)
+  , deadCells : List (Int, Int)
+  , liveRules : List (Int -> (Int, Int) -> Maybe (Int, Int))
+  , deadRules : List (Int -> (Int, Int) -> Maybe (Int, Int))
+  }
+
+automataStep : Automaton -> Automaton
+automataStep automaton = automaton
+
 -- SUBSCRIPTIONS
 
 
