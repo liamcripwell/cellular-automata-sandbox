@@ -51,26 +51,24 @@ cartesian xs ys =
     ( \x -> List.map ( \y -> (x, y) ) ys )
     xs
 
-liveNeighbours state (x, y) = 
+liveneighbors state (x, y) = 
   cartesian (List.range (x-1) (x+1)) (List.range (y-1) (y+1))
   |> List.filter (\a -> List.member a state)
 
-rule1 neighbours cell =
-  let
-    neighborsCount = (List.length neighbours) - 1
-  in
-    if neighborsCount < 2 then [] else [cell]
-    
+rule1 neighborCount cell =
+  if neighborCount < 2 then [] else [cell]
 
 rule4 cell =
-  liveNeighbours cell
+  liveneighbors cell
 
 gameOfLife liveCells cell =
   let
-    neighbours :  List (Int, Int)
-    neighbours = liveNeighbours liveCells cell
+    neighbors :  List (Int, Int)
+    neighbors = liveneighbors liveCells cell
+
+    neighborCount = (List.length neighbors) - 1
   in
-    rule1 neighbours cell
+    rule1 neighborCount cell
 
 
 
