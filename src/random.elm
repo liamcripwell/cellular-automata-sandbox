@@ -36,62 +36,14 @@ init _ =
   )
 
 
+ -- TODO: get rid of these global vars 
+gridWidth = 50
+gridHeight = 25
+cellSize = 15 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1) 
+
+
 
 -- UPDATE
-
-randomCell : Random.Generator (Int, Int)
-randomCell = Random.pair (Random.int 0 (gridWidth-1)) (Random.int 0 (gridHeight-1))
-
-randomCells : Int -> Random.Generator (List (Int, Int))
-randomCells n = Random.list n randomCell
-
-cartesian : List a -> List b -> List (a,b)
-cartesian xs ys =
-  List.concatMap
-    ( \x -> List.map ( \y -> (x, y) ) ys )
-    xs
-
-liveneighbors state (x, y) = 
-  cartesian (List.range (x-1) (x+1)) (List.range (y-1) (y+1))
-  |> List.filter (\a -> List.member a state)
-
-rule1 neighborCount cell =
-  if neighborCount < 2 then Nothing else Just cell
-
-rule2 neighborCount cell =
-  if neighborCount == 2 || neighborCount == 3 then Just cell else Nothing
-
-rule3 neighborCount cell =
-  if neighborCount > 3 then Nothing else Just cell
-
-rule4 neighborCount cell =
-  if neighborCount == 3 then [cell] else []
-
-gameOfLife liveCells cell =
-  let
-    neighbors :  List (Int, Int)
-    neighbors = liveneighbors liveCells cell
-
-    neighborCount = (List.length neighbors) - 1
-  in
-    case rule1 neighborCount cell of
-      Nothing -> []
-      Just x -> 
-        case rule2 neighborCount cell of
-          Nothing -> []
-          Just y ->
-            case rule3 neighborCount cell of
-                Nothing -> []
-                Just z -> [z]
-
-gameOfDeath liveCells cell =
-    let
-        neighbors = liveneighbors liveCells cell
-        neighborCount = (List.length neighbors)
-        isLive = List.member cell liveCells
-    in
-      if isLive then []
-      else rule4 neighborCount cell
 
 
 type Msg
@@ -121,6 +73,65 @@ update msg model =
       )
 
 
+randomCell : Random.Generator (Int, Int)
+randomCell = Random.pair (Random.int 0 (gridWidth-1)) (Random.int 0 (gridHeight-1))
+
+randomCells : Int -> Random.Generator (List (Int, Int))
+randomCells n = Random.list n randomCell
+
+cartesian : List a -> List b -> List (a,b)
+cartesian xs ys =
+  List.concatMap
+    ( \x -> List.map ( \y -> (x, y) ) ys )
+    xs
+
+liveneighbors : List (Int, Int) -> (Int, Int) -> List (Int, Int)
+liveneighbors state (x, y) = 
+  cartesian (List.range (x-1) (x+1)) (List.range (y-1) (y+1))
+  |> List.filter (\a -> List.member a state)
+
+rule1 : Int -> (Int, Int) -> Maybe (Int, Int)
+rule1 neighborCount cell =
+  if neighborCount < 2 then Nothing else Just cell
+
+rule2 : Int -> (Int, Int) -> Maybe (Int, Int)
+rule2 neighborCount cell =
+  if neighborCount == 2 || neighborCount == 3 then Just cell else Nothing
+
+rule3 : Int -> (Int, Int) -> Maybe (Int, Int)
+rule3 neighborCount cell =
+  if neighborCount > 3 then Nothing else Just cell
+
+rule4 : Int -> (Int, Int) -> List (Int, Int)
+rule4 neighborCount cell =
+  if neighborCount == 3 then [cell] else []
+
+gameOfLife : List (Int, Int) -> (Int, Int) -> List (Int, Int)
+gameOfLife liveCells cell =
+  let
+    neighbors = liveneighbors liveCells cell
+    neighborCount = (List.length neighbors) - 1
+  in
+    case rule1 neighborCount cell of
+      Nothing -> []
+      Just x -> 
+        case rule2 neighborCount cell of
+          Nothing -> []
+          Just y ->
+            case rule3 neighborCount cell of
+                Nothing -> []
+                Just z -> [z]
+
+gameOfDeath : List (Int, Int) -> (Int, Int) -> List (Int, Int)
+gameOfDeath liveCells cell =
+    let
+        neighbors = liveneighbors liveCells cell
+        neighborCount = (List.length neighbors)
+        isLive = List.member cell liveCells
+    in
+      if isLive then []
+      else rule4 neighborCount cell
+
 
 -- SUBSCRIPTIONS
 
@@ -141,12 +152,6 @@ view model =
         List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.liveCells
     , button [ onClick Test ] [ text "Time Step" ]
     ]
-
-
--- TODO: get rid of these global vars 
-gridWidth = 50
-gridHeight = 25
-cellSize = 15 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 
 
 updateCells : List (Float, Float) -> Html.Html msg
