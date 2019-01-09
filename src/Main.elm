@@ -28,12 +28,13 @@ main =
 type alias Model =
   { liveCells : List (Int, Int)
   , timeStep : Int
+  , paused : Bool
   }
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model [(2+10,20),(3+10,20),(4+10,20),(5+10,20),(6+10,20),(7+10,20),(8+10,20),(9+10,20),(11+10,20),(12+10,20),(13+10,20),(14+10,20),(15+10,20),(19+10,20),(20+10,20),(21+10,20),(28+10,20),(29+10,20),(30+10,20),(31+10,20),(32+10,20),(33+10,20),(34+10,20),(36+10,20),(37+10,20),(38+10,20),(39+10,20),(40+10,20)] 0
+  ( Model [(2+10,20),(3+10,20),(4+10,20),(5+10,20),(6+10,20),(7+10,20),(8+10,20),(9+10,20),(11+10,20),(12+10,20),(13+10,20),(14+10,20),(15+10,20),(19+10,20),(20+10,20),(21+10,20),(28+10,20),(29+10,20),(30+10,20),(31+10,20),(32+10,20),(33+10,20),(34+10,20),(36+10,20),(37+10,20),(38+10,20),(39+10,20),(40+10,20)] 0 False
 --   , Random.generate NewState <| randomCells 800
   , Cmd.none
   )
@@ -52,21 +53,30 @@ cellSize = 10 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1)
 type Msg
   = Step Time.Posix
   | NewState (List (Int, Int))
+  | Pause Bool
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Step newTime ->
-      ( { model | liveCells = 
-          (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
-          ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
-         , timeStep = (model.timeStep + 1)}
-      , Cmd.none
-      )
+      if model.paused then
+        (model, Cmd.none)
+      else 
+        ( { model | liveCells = 
+            (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
+            ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
+            , timeStep = (model.timeStep + 1)}
+        , Cmd.none
+        )
 
     NewState newLiveCells ->
       ( { model | liveCells = newLiveCells }
+      , Cmd.none
+      )
+
+    Pause newState ->
+      ( { model | paused = newState }
       , Cmd.none
       )
 
@@ -158,10 +168,14 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ drawGrid <| List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.liveCells
-    , h1 [] [ text <| "Time Step: " ++ (String.fromInt model.timeStep) ]
-    ]
+  let
+      pauseButtonText = if model.paused then "Continue" else "Pause"
+  in
+    div []
+      [ drawGrid <| List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.liveCells
+      , h3 [] [ text <| "Time Step: " ++ (String.fromInt model.timeStep) ]
+      , button [ onClick <| Pause <| not model.paused ] [ text pauseButtonText ]
+      ]
 
 
 updateCells : List (Float, Float) -> Html.Html msg
