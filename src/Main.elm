@@ -41,9 +41,9 @@ init _ =
 
 
  -- TODO: get rid of these global vars 
-gridWidth = 75
-gridHeight = 50
-cellSize = 10 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1) 
+gridWidth = 50
+gridHeight = 30
+cellSize = 19 -- Note: cell's internal size will be (cellSize-1)*(cellSize-1) 
 
 
 
