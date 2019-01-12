@@ -34,9 +34,9 @@ type alias Model =
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model [(2+10,20),(3+10,20),(4+10,20),(5+10,20),(6+10,20),(7+10,20),(8+10,20),(9+10,20),(11+10,20),(12+10,20),(13+10,20),(14+10,20),(15+10,20),(19+10,20),(20+10,20),(21+10,20),(28+10,20),(29+10,20),(30+10,20),(31+10,20),(32+10,20),(33+10,20),(34+10,20),(36+10,20),(37+10,20),(38+10,20),(39+10,20),(40+10,20)] 0 False
---   , Random.generate NewState <| randomCells 800
-  , Cmd.none
+  ( --Model [(2+10,20),(3+10,20),(4+10,20),(5+10,20),(6+10,20),(7+10,20),(8+10,20),(9+10,20),(11+10,20),(12+10,20),(13+10,20),(14+10,20),(15+10,20),(19+10,20),(20+10,20),(21+10,20),(28+10,20),(29+10,20),(30+10,20),(31+10,20),(32+10,20),(33+10,20),(34+10,20),(36+10,20),(37+10,20),(38+10,20),(39+10,20),(40+10,20)] 0 False
+   Model [] 0 False
+  , (Random.generate NewState <| randomCells 1200)
   )
 
 
@@ -66,7 +66,8 @@ update msg model =
         ( { model | liveCells = 
             (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
             ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
-            , timeStep = (model.timeStep + 1)}
+          , timeStep = (model.timeStep + 1)
+          }
         , Cmd.none
         )
 
@@ -93,9 +94,13 @@ cartesian xs ys =
     ( \x -> List.map ( \y -> (x, y) ) ys )
     xs
 
+allNeighbors : List (Int, Int) -> (Int, Int) -> List (Int, Int)
+allNeighbors state (x, y) = 
+  cartesian (List.range (x-1) (x+1)) (List.range (y-1) (y+1))
+
 liveneighbors : List (Int, Int) -> (Int, Int) -> List (Int, Int)
 liveneighbors state (x, y) = 
-  cartesian (List.range (x-1) (x+1)) (List.range (y-1) (y+1))
+  allNeighbors state (x, y)
   |> List.filter (\a -> List.member a state)
 
 rule1 : Int -> (Int, Int) -> Maybe (Int, Int)
@@ -142,15 +147,18 @@ gameOfDeath liveCells cell =
 
 
 type alias Automaton = 
-  { liveCells : List (Int, Int)
-  , deadCells : List (Int, Int)
-  , liveRules : List (Int -> (Int, Int) -> Maybe (Int, Int))
-  , deadRules : List (Int -> (Int, Int) -> Maybe (Int, Int))
+  { liveCells : List Cell
+  , deadCells : List Cell
+  , liveRules : List (Int -> Cell -> Maybe Cell)
+  , deadRules : List (Int -> Cell -> Maybe Cell)
   }
+
+type alias Cell = (Int, Int)
 
 automataStep : Automaton -> Automaton
 automataStep automaton = 
-  { automaton | liveCells = automaton.liveCells } 
+  { automaton | liveCells = automaton.liveCells
+              , deadCells = automaton.deadCells } 
 
 -- TODO: perhaps implement a cell type and complete the automatonStep function above
 
