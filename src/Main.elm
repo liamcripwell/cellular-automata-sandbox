@@ -163,7 +163,7 @@ automataStep automaton =
 buildAutomaton : Int -> Int -> Int -> Automaton
 buildAutomaton width height cellDim = 
   { liveCells = []
-  , deadCells = cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1))
+  , deadCells = cartesian (List.range 0 (width-1)) (List.range 0 (height-1))
   , liveRules = []
   , deadRules = []
   }
