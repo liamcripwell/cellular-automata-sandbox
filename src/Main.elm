@@ -160,7 +160,15 @@ automataStep automaton =
   { automaton | liveCells = automaton.liveCells
               , deadCells = automaton.deadCells } 
 
--- TODO: perhaps implement a cell type and complete the automatonStep function above
+buildAutomaton : Int -> Int -> Int -> Automaton
+buildAutomaton width height cellDim = 
+  { liveCells = []
+  , deadCells = cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1))
+  , liveRules = []
+  , deadRules = []
+  }
+  
+
 
 -- SUBSCRIPTIONS
 
