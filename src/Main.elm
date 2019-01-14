@@ -168,7 +168,15 @@ buildAutomaton width height cellDim =
   , deadRules = []
   }
   
+setCell : Cell -> Automaton -> Automaton
+setCell cell automaton  = 
+  { automaton | liveCells = cell :: automaton.liveCells
+              , deadCells = List.Extra.remove cell automaton.deadCells }
 
+killCell : Cell -> Automaton -> Automaton
+killCell cell automaton  = 
+  { automaton | liveCells = List.Extra.remove cell automaton.liveCells
+              , deadCells = cell :: automaton.deadCells }
 
 -- SUBSCRIPTIONS
 
