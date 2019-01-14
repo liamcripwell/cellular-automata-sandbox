@@ -178,12 +178,34 @@ killCell cell automaton  =
   { automaton | liveCells = List.Extra.remove cell automaton.liveCells
               , deadCells = cell :: automaton.deadCells }
 
+buildGameOfLife : Int -> Int -> Int -> Automaton
+buildGameOfLife width height cellDim = 
+  let
+      automaton = buildAutomaton width height cellDim
+      
+      r1 neighborCount cell =
+        if neighborCount < 2 then Nothing else Just cell
+
+      r2 neighborCount cell =
+        if neighborCount == 2 || neighborCount == 3 then Just cell else Nothing
+
+      r3 neighborCount cell =
+        if neighborCount > 3 then Nothing else Just cell
+
+      r4 neighborCount cell =
+        if neighborCount == 3 then Just cell else Nothing
+  in
+    { automaton | liveRules = [ r1, r2, r3 ]
+                , deadRules = [ r4 ] }
+
+
+
 -- SUBSCRIPTIONS
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every 100 Step
+  Time.every 250 Step
 
 
 
