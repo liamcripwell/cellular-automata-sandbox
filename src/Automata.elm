@@ -19,8 +19,8 @@ type alias Cell = (Int, Int)
 
 automataStep : Automaton -> Automaton
 automataStep automaton = 
-  { automaton | liveCells = List.drop 1 automaton.liveCells
-              , deadCells = automaton.deadCells } 
+  { automaton | liveCells = automaton.liveCells
+              , deadCells = List.drop 1 automaton.deadCells } 
 
 buildAutomaton : Int -> Int -> Int -> Automaton
 buildAutomaton width height cellDim = 

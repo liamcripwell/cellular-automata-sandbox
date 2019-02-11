@@ -171,6 +171,8 @@ view model =
     div []
       [ drawGrid <| List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.liveCells
       , h3 [] [ text <| "Time Step: " ++ (String.fromInt model.timeStep) ]
+      , br [] []
+      , h3 [] [ text <| "Dead Cell Count: " ++ (String.fromInt <| List.length model.automaton.deadCells) ]
       , button [ onClick <| Pause <| not model.paused ] [ text pauseButtonText ]
       ]
 
