@@ -19,7 +19,7 @@ type alias Cell = (Int, Int)
 
 automataStep : Automaton -> Automaton
 automataStep automaton = 
-  { automaton | liveCells = automaton.liveCells
+  { automaton | liveCells = List.drop 1 automaton.liveCells
               , deadCells = automaton.deadCells } 
 
 buildAutomaton : Int -> Int -> Int -> Automaton
