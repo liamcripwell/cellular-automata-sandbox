@@ -65,9 +65,9 @@ update msg model =
       if model.paused then
         (model, Cmd.none)
       else 
-        ( { model | liveCells = 
-            (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
-            ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
+        ( { model | liveCells = model.automaton.deadCells
+            -- (List.foldr (++) [] <| List.map (gameOfLife model.liveCells) model.liveCells)
+            -- ++ (List.foldr (++) [] <| List.map (gameOfDeath model.liveCells) <| cartesian (List.range 0 (gridWidth-1)) (List.range 0 (gridHeight-1)))
           , timeStep = (model.timeStep + 1)
           , automaton = Automata.automataStep model.automaton
           }
