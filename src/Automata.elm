@@ -1,3 +1,5 @@
+module Automata exposing (..)
+
 import List.Extra exposing (..)
 
 cartesian : List a -> List b -> List (a,b)

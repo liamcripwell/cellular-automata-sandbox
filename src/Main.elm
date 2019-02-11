@@ -8,6 +8,7 @@ import Svg.Attributes exposing (..)
 import List.Extra exposing (..)
 import Time
 
+import Automata
 
 -- MAIN
 
@@ -29,13 +30,14 @@ type alias Model =
   { liveCells : List (Int, Int)
   , timeStep : Int
   , paused : Bool
+  , automaton : Automata.Automaton
   }
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
   ( --Model [(2+10,20),(3+10,20),(4+10,20),(5+10,20),(6+10,20),(7+10,20),(8+10,20),(9+10,20),(11+10,20),(12+10,20),(13+10,20),(14+10,20),(15+10,20),(19+10,20),(20+10,20),(21+10,20),(28+10,20),(29+10,20),(30+10,20),(31+10,20),(32+10,20),(33+10,20),(34+10,20),(36+10,20),(37+10,20),(38+10,20),(39+10,20),(40+10,20)] 0 False
-   Model [] 0 False
+   Model [] 0 False (Automata.buildGameOfLife 50 30 19)
   , (Random.generate NewState <| randomCells 1200)
   )
 
