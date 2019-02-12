@@ -100,7 +100,7 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   let
-      pauseButtonText = if model.paused then "Continue" else "Pause"
+    pauseButtonText = if model.paused then "Continue" else "Pause"
   in
     div []
       [ drawGrid <| List.map (\x -> (toFloat <| Tuple.first x, toFloat <| Tuple.second x)) model.automaton.deadCells
