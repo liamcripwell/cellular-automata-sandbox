@@ -42,7 +42,10 @@ automataStep automaton =
         rule neighborCount cell
 
     liveRuleApplications = List.map applyLiveRule automaton.liveRules
-    liveRuleResults = List.map (\x -> List.filterMap identity (List.map (\f -> f x) liveRuleApplications)) automaton.liveCells
+    liveRuleResults = List.map (\x -> 
+                                 if (List.length <| List.filterMap identity (List.map (\f -> f x) liveRuleApplications)) == List.length automaton.liveRules then [x]
+                                 else [] 
+                               ) automaton.liveCells
     newLive = List.Extra.unique <| List.foldr (++) [] liveRuleResults
 
     applyDeadRule rule cell = 
@@ -53,7 +56,10 @@ automataStep automaton =
         rule neighborCount cell
 
     deadRuleApplications = List.map applyDeadRule automaton.deadRules
-    deadRuleResults = List.map (\x -> List.filterMap identity (List.map (\f -> f x) deadRuleApplications)) automaton.deadCells
+    deadRuleResults = List.map (\x -> 
+                                 if (List.length <| List.filterMap identity (List.map (\f -> f x) deadRuleApplications)) == List.length automaton.deadRules then [x]
+                                 else [] 
+                               ) automaton.deadCells
     newDead = List.Extra.unique <| List.foldr (++) [] deadRuleResults
   in
     { automaton | liveCells = automaton.liveCells
